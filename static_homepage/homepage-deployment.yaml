@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: app
+        image: nginx
+        volumeMounts:
+        - name: nfs-vol
+          mountPath: /usr/share/nginx/html
+        - name: config
+          mountPath: /etc/nginx/conf.d
+        - name: tls-secret
+          mountPath: /etc/ssl
+        ports:
+        - containerPort: 80
+      volumes:
+      - name: nfs-vol
+        persistentVolumeClaim:
+          claimName: homepage-pvc
+      - name: config
+        configMap:
+          name: nginx-conf
+          items:
+          - key: default.conf
+            path: default.conf
+      - name: tls-secret
+        secret:
+          secretName: tls-secret
+          items:
+          - key: tls.crt
+            path: certificate.crt
+          - key: tls.key
+            path: private.key
