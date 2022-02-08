@@ -1,0 +1,2 @@
+﻿elk stack/elasticsearch/data/nodes
+elk stack/elasticsearch/log/*.*
